@@ -28,8 +28,8 @@ USER_USAGE_LOG = {}
 # Bot ထဲသို့ ဝင်ရောက်လာသော User IDs များကို သိမ်းဆည်းခြင်း
 ALL_USERS = set()
 
-# Telegram မှ တိုက်ရိုက်ဖတ်နိုင်သော စိတ်ချရသည့် ကတ်ကျောဘက်ပုံ Direct URL
-CARD_BACK_IMAGE = "https://upload.wikimedia.org/wikipedia/commons/2/2b/Tarot_Back_RWS.jpg"
+# တရားဝင် သေချာပေါက် အလုပ်လုပ်သော ကတ်ကျောဘက်ပုံ Direct URL
+CARD_BACK_IMAGE = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=500&auto=format&fit=crop"
 
 # HTML custom styling သုံး၍ အနီရောင် စာသားထွက်ပေါ်စေရန် သုံးသော စာလုံးပုံစံ
 RED_TEXT_START = "<code>"
@@ -99,7 +99,7 @@ async def admin_buttons(update: Update, context: ContextTypes.DEFAULT_TYPE):
             context.user_data['waiting_for_broadcast'] = True
             await update.message.reply_text("User အားလုံးထံ ပေးပို့လိုမည့် စာသားကို ရိုက်နှိပ်ပေးပို့ပါ။")
 
-# Inline Keyboard Handlers (ဗေဒင်မေးသည့် အဆင့်ဆင့် Flow)
+# Inline Keyboard Handlers
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -118,7 +118,6 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         inline_kb = [[InlineKeyboardButton("🃏 ကတ်ကိုလှန်ပါ (Click to Flip)", callback_data="flip_card")]]
         reply_markup = InlineKeyboardMarkup(inline_kb)
         
-        # ကတ်ကျောဘက်ပုံစစ်စစ် (Card Back) ကို အပေါ်ဆုံးမှာ အရင်ဆုံး ပြသပေးမည်
         await query.message.reply_photo(
             photo=CARD_BACK_IMAGE,
             caption="<b>သင့်မေးခွန်းကိုအာရုံပြု၍ ကတ်အား ရွေးချယ်ပါ</b>",
@@ -139,33 +138,14 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         card = TAROT_DATA[card_key]
         is_upright = random.choice([True, False])
         
-        card_name = card["name_upright"] if is_upright else card["name_reversed"]
+        # 🛑 [FIXED LOGIC] အတည့်ဆိုလျှင် ကတ်နာမည်သီးသန့်သာပြမည်၊ ပြောင်းပြန်ဆိုမှ (ပြောင်းပြန်) ဟု တွဲပြမည်။
+        # json ထဲတွင် "The Fool (အတည်)" ဟု ပါနေလျှင်လည်း "(အတည်)" ကို ဖြတ်ထုတ်ရန် လုပ်ဆောင်ထားသည်။
+        base_name = card["name_upright"].replace(" (အတည်)", "").replace("(အတည်)", "").strip()
+        card_name = base_name if is_upright else f"{base_name} (ပြောင်းပြန်)"
+        
+        # 🛑 [IMAGE LOGIC] အတည့်ပုံ သို့မဟုတ် ပြောင်းပြန်ပုံကို စနစ်တကျ ခွဲခြားဖတ်ယူခြင်း
         card_image = card["image_upright"] if is_upright else card["image_reversed"]
         reading_data = card["upright"] if is_upright else card["reversed"]
-        
-        # 🌟 [FLIP ANIMATION EFFECT] 🌟
-        # ယခင်ပေါ်နေသော "ကတ်ကျောဘက်ပုံ" နေရာတွင် "ကတ်အစစ်အလှန်ပုံ" သို့ ဒိုင်းခနဲ မျက်စိရှေ့တင် တိုက်ရိုက် လဲလှယ်ပစ်လိုက်ခြင်း
-        try:
-            await query.message.edit_media(
-                media=InputMediaPhoto(
-                    media=card_image, 
-                    caption=f"🃏 <b>{card_name}</b>\n\n⏳ ကံကြမ္မာဟောကိန်းများအား ခေတ္တာစောင့်ပါ...", 
-                    parse_mode="HTML"
-                ),
-                reply_markup=get_contact_button()
-            )
-        except Exception as e:
-            logger.error(f"Edit media error: {e}")
-            # အကယ်၍ Edit လုပ်၍မရပါက Message အသစ်ဖြင့် ကတ်ပုံကို ပို့ပေးမည်
-            await query.message.reply_photo(
-                photo=card_image,
-                caption=f"🃏 <b>{card_name}</b>\n\n⏳ ကံကြမ္မာဟောကိန်းများအား ခေတ္တာစောင့်ပါ...",
-                reply_markup=get_contact_button(),
-                parse_mode="HTML"
-            )
-        
-        # ၃ စက္ကန့် စောင့်ဆိုင်းခြင်း
-        await asyncio.sleep(3)
         
         # ဟောပြောချက်စာသားများ စုစည်းပြင်ဆင်ခြင်း
         full_interpretation = (
@@ -177,29 +157,47 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # Loading စာသားနေရာတွင် ဗေဒင်အဟော အပြည့်အစုံဖြင့် အပြီးသတ် အစားထိုးပြသခြင်း
-        await query.message.edit_caption(
-            caption=full_interpretation,
-            reply_markup=get_contact_button(),
-            parse_mode="HTML"
-        )
+        try:
+            # ကတ်ကျောဘက်ပုံနေရာတွင် ကတ်ပုံ (အတည့် သို့မဟုတ် ပြောင်းပြန်ပုံ) ဖြင့် ဒိုင်းခနဲ လဲလှယ်မည်
+            await query.message.edit_media(
+                media=InputMediaPhoto(
+                    media=card_image, 
+                    caption=f"🃏 <b>{card_name}</b>\n\n⏳ ကံကြမ္မာဟောကိန်းများအား ခေတ္တာစောင့်ပါ...", 
+                    parse_mode="HTML"
+                )
+            )
+            await asyncio.sleep(3)
+            await query.message.edit_caption(caption=full_interpretation, reply_markup=get_contact_button(), parse_mode="HTML")
+            
+        except Exception as img_err:
+            logger.error(f"Image Error: {img_err}")
+            # အကယ်၍ json ထဲက ပုံ Link အဆင်မပြေပါက Wikipedia က အရန်ပုံဖြင့် သေချာပေါက် ပုံပေါ်အောင် ဇွတ်ပြမည်
+            fallback_card_img = "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg"
+            try:
+                await query.message.edit_media(
+                    media=InputMediaPhoto(
+                        media=fallback_card_img, 
+                        caption=f"🃏 <b>{card_name}</b>\n\n⏳ ကံကြမ္မာဟောကိန်းများအား ခေတ္တာစောင့်ပါ...", 
+                        parse_mode="HTML"
+                    )
+                )
+                await asyncio.sleep(3)
+                await query.message.edit_caption(caption=full_interpretation, reply_markup=get_contact_button(), parse_mode="HTML")
+            except Exception:
+                await query.message.reply_photo(photo=fallback_card_img, caption=full_interpretation, reply_markup=get_contact_button(), parse_mode="HTML")
 
 def main():
     if not config.BOT_TOKEN:
         print("Error: TELEGRAM_BOT_TOKEN missing!")
         return
 
-    # Render Port Scan Timeout Error အတွက် Dummy Server အား Background တွင် ပေးမောင်းထားခြင်း
     threading.Thread(target=run_health_server, daemon=True).start()
 
-    # Telegram Bot Application စတင်ခြင်း
     application = Application.builder().token(config.BOT_TOKEN).build()
 
-    # Handlers များ ချိတ်ဆက်ခြင်း
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(handle_callback))
     
-    # Creator Admin နှင့် ပုံမှန် Text ကန့်သတ်ချက်များ
     application.add_handler(MessageHandler(filters.TEXT & filters.ChatType.PRIVATE & ~filters.COMMAND, admin_buttons), group=1)
     application.add_handler(MessageHandler(filters.TEXT & filters.ChatType.PRIVATE & ~filters.COMMAND, restrict_text_messages), group=2)
 
