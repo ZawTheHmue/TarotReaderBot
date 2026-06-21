@@ -48,26 +48,35 @@ def run_health_server():
             self.wfile.write(b"Bot is alive and running!")
     httpd = http.server.HTTPServer(server_address, HealthCheckHandler)
     logger.info(f"Dummy Health Check Server Running on Port {port}...")
-    httpd.forever_server = threading.Thread(target=httpd.serve_forever, daemon=True)
-    httpd.forever_server.start()
+    
+    server_thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    server_thread.start()
 
 # နေ့စဉ် မြန်မာ့နေ့ထူးနေ့မြတ် ဆုတောင်းစာ Auto ပို့ပေးမည့် Background Task
 async def daily_holiday_wishes(application: Application):
     while True:
-        now = datetime.now()
-        if now.hour == 8 and now.minute == 0:
-            today_md = now.strftime("%m-%d")
-            if today_md in HOLIDAY_DATA:
-                holiday_info = HOLIDAY_DATA[today_md]
-                wish_message = f"🌟 <b>{holiday_info['title']}</b> 🌟\n\n{holiday_info['wish_text']}"
-                for user_id in list(ALL_USERS):
-                    try:
-                        await application.bot.send_message(chat_id=user_id, text=wish_message, parse_mode="HTML")
-                        await asyncio.sleep(0.05)
-                    except Exception:
-                        pass
-            await asyncio.sleep(60)
+        try:
+            now = datetime.now()
+            if now.hour == 8 and now.minute == 0:
+                today_md = now.strftime("%m-%d")
+                if today_md in HOLIDAY_DATA:
+                    holiday_info = HOLIDAY_DATA[today_md]
+                    wish_message = f"🌟 <b>{holiday_info['title']}</b> 🌟\n\n{holiday_info['wish_text']}"
+                    for user_id in list(ALL_USERS):
+                        try:
+                            await application.bot.send_message(chat_id=user_id, text=wish_message, parse_mode="HTML")
+                            await asyncio.sleep(0.05)
+                        except Exception:
+                            pass
+                await asyncio.sleep(60)
+        except Exception as e:
+            logger.error(f"Error in daily holiday task: {e}")
         await asyncio.sleep(30)
+
+# Bot စတင်ချိန်တွင် Background Task ကို ချိတ်ဆက်ပေးမည့် Post Init
+async def post_init(application: Application) -> None:
+    asyncio.create_task(daily_holiday_wishes(application))
+    logger.info("Background holiday task successfully attached to Application Lifespan!")
 
 # Contact with Astrologer Button
 def get_contact_button():
@@ -120,18 +129,20 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             photo=CARD_BACK_IMAGE
         )
         
-        # (ဂ) inline k သီးသန့် ပေါ်လာမည်
-        inline_kb = [[InlineKeyboardButton("🃏 ကတ်တစ်ကတ်ရွေးမည်", callback_data="flip_card")]]
+        # 🛑 [FIXED] ဆရာသမား ညွှန်ကြားချက်အရ အပေါ်ကစာသားကို ဖြုတ်ပြီး ခလုတ်သီးသန့်ပဲ ပို့ဆောင်ခြင်း
+        inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🃏", callback_data="flip_card")]]
         reply_markup = InlineKeyboardMarkup(inline_kb)
+        
         button_msg = await context.bot.send_message(
             chat_id=chat_id,
+            text="✨", # စာသားအရှည်ကြီးအစား အမြင်မရှုပ်အောင် ညင်သာတဲ့ Emoji လေးတစ်ခုပဲ သုံးထားပါတယ်
             reply_markup=reply_markup
         )
         
-        # မက်ဆေ့ချ် ID (၃) ခုလုံးကို သေချာမှတ်ထားခြင်း
+        # မက်ဆေ့ချ် ID (၃) ခုလုံးကို မှတ်သားထားခြင်း
         context.user_data['msgs_to_delete'] = [text_msg.message_id, photo_msg.message_id, button_msg.message_id]
 
-    # ၂။ "🃏 ကတ်တစ်ကတ်ရွေးမည်" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
+    # ၂။ "🃏ကတ်တစ်ကတ်ရွေးမည်🃏" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
     elif query.data == "flip_card":
         USER_USAGE_LOG[user_id] = today_str
         
@@ -139,15 +150,13 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_text("⚠️ ဟောချက်ဒေတာဖိုင် (tarot_data.json) မရှိသေးပါသဖြင့် ခေတ္တာစောင့်ဆိုင်းပေးပါ။")
             return
 
-        # 🛑 [FIXED ANIMATION] asyncio.gather သုံးပြီး စာ၊ ကတ်၊ ခလုတ် သုံးခုလုံးကို တစ်ပြိုင်တည်း ဒိုင်းခနဲ ဖျက်ထုတ်ပစ်ခြင်း
+        # asyncio.gather သုံးပြီး စာ၊ ကတ်၊ ခလုတ် သုံးခုလုံးကို တစ်ပြိုင်တည်း ဒိုင်းခနဲ ဖျက်ထုတ်ပစ်ခြင်း
         if 'msgs_to_delete' in context.user_data:
             delete_tasks = []
             for msg_id in context.user_data['msgs_to_delete']:
-                # ဖြတ်မယ့် Task တွေကို စာရင်းထဲ ကြိုစုထည့်ခြင်း
                 delete_tasks.append(context.bot.delete_message(chat_id=chat_id, message_id=msg_id))
             
             try:
-                # စုထားတဲ့ Task အားလုံးကို ပြိုင်တူ မောင်းနှင်ပြီး ချက်ချင်းဖျက်ခြင်း
                 await asyncio.gather(*delete_tasks, return_exceptions=True)
             except Exception as e:
                 logger.error(f"Batch delete error: {e}")
@@ -218,21 +227,14 @@ def main():
         print("Error: TELEGRAM_BOT_TOKEN missing!")
         return
 
-    threading.Thread(target=run_health_server, daemon=True).start()
+    run_health_server()
 
-    application = Application.builder().token(config.BOT_TOKEN).build()
+    application = Application.builder().token(config.BOT_TOKEN).post_init(post_init).build()
 
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CallbackQueryHandler(handle_callback))
-    
-    # Background Daily Task ကို စတင်မောင်းနှင်ခြင်း
-    loop = asyncio.get_event_loop()
-    if loop.is_running():
-        asyncio.ensure_future(daily_holiday_wishes(application))
-    else:
-        loop.create_task(daily_holiday_wishes(application))
 
-    print("Tarot Bot Is Running...")
+    print("Tarot Bot Is Running Successfully...")
     application.run_polling(allowed_updates=Update.ALL_TYPES)
 
 if __name__ == '__main__':
