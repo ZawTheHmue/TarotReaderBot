@@ -5,7 +5,10 @@ import asyncio
 import http.server
 import threading
 import os
+import io
+import requests
 from datetime import datetime
+from PIL import Image
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, InputMediaPhoto
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 import config
@@ -85,6 +88,19 @@ def get_contact_button():
         [InlineKeyboardButton("Contact with Astrologer🔮 (10K💵)", url=url)]
     ])
 
+# URL မှ ပုံကို ရယူပြီး ပြောင်းပြန် (၁၈၀ ဒီဂရီ) လှည့်ပေးမည့် Helper Function
+def get_rotated_image_bytes(image_url: str) -> io.BytesIO:
+    response = requests.get(image_url, timeout=10)
+    img = Image.open(io.BytesIO(response.content))
+    # ပုံကို ပြောင်းပြန် (Upside Down) ဖြစ်အောင် ၁၈၀ ဒီဂရီ လှည့်ခြင်း
+    rotated_img = img.rotate(180)
+    
+    bio = io.BytesIO()
+    bio.name = 'reversed_card.jpeg'
+    rotated_img.save(bio, 'JPEG')
+    bio.seek(0)
+    return bio
+
 # /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
@@ -106,6 +122,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     user_id = update.effective_user.id
     today_str = datetime.now().strftime("%Y-%m-%d")
+    chat_id = query.message.chat_id
     
     # ၁။ "🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်" ကို နှိပ်လိုက်ချိန်
     if query.data == "start_tarot":
@@ -115,18 +132,25 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.message.reply_text(reject_msg, parse_mode="HTML")
                 return
         
-        # 🛑 [FIXED] မလိုတဲ့ စာသားမက်ဆေ့ချ်တွေအကုန်ဖြုတ်ပြီး ပုံအောက်မှာ ခလုတ်ကို တခါတည်း တွဲလျက်ကပ်ထည့်ခြင်း
-        inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🃏", callback_data="flip_card")]]
-        reply_markup = InlineKeyboardMarkup(inline_kb)
-        
-        await query.message.reply_photo(
-            photo=CARD_BACK_IMAGE,
-            caption="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>",
-            reply_markup=reply_markup,
-            parse_mode="HTML"
+        # မက်ဆေ့ချ် (၄) ခု သီးသန့်စီ ထွက်လာစေခြင်း
+        msg1 = await context.bot.send_message(
+            chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
         )
+        msg2 = await context.bot.send_photo(
+            chat_id=chat_id, photo=CARD_BACK_IMAGE
+        )
+        msg3 = await context.bot.send_message(
+            chat_id=chat_id, text="⬇️ကတ်ရွေးမည်⬇️"
+        )
+        inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🪄", callback_data="flip_card")]]
+        reply_markup = InlineKeyboardMarkup(inline_kb)
+        msg4 = await context.bot.send_message(
+            chat_id=chat_id, text="✨ စတင်ရန် ခလုတ်နှိပ်ပါ ✨", reply_markup=reply_markup
+        )
+        
+        context.user_data['msgs_to_edit'] = [msg1.message_id, msg2.message_id, msg3.message_id, msg4.message_id]
 
-    # ၂။ "🃏ကတ်တစ်ကတ်ရွေးမည်🃏" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
+    # ၂။ "🃏ကတ်တစ်ကတ်ရွေးမည်🪄" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
     elif query.data == "flip_card":
         USER_USAGE_LOG[user_id] = today_str
         
@@ -139,10 +163,10 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         card = TAROT_DATA[card_key]
         is_upright = random.choice([True, False])
         
+        # ကတ်အတည့်ဆို ကတ်နာမည်သီးသန့်၊ ပြောင်းပြန်ဆိုမှ (ပြောင်းပြန်) ဟု ပြသခြင်း
         base_name = card["name_upright"].replace(" (အတည်)", "").replace("(အတည်)", "").strip()
         card_name = base_name if is_upright else f"{base_name} (ပြောင်းပြန်)"
         
-        card_image = card["image_upright"] if is_upright else card["image_reversed"]
         reading_data = card["upright"] if is_upright else card["reversed"]
         
         full_interpretation = (
@@ -154,41 +178,57 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # 🛑 [3D FLIP SIMULATION EFFECT] Message ကို မဖျက်တော့ဘဲ မူရင်းပုံနေရာမှာတင် ပုံအသစ်နဲ့ လဲလှယ်ခြင်း
-        try:
-            await query.message.edit_media(
-                media=InputMediaPhoto(
-                    media=card_image, 
-                    caption=f"🃏 <b>{card_name}</b>\n\n⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", 
-                    parse_mode="HTML"
-                )
-            )
-            
-            # ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
-            await asyncio.sleep(5)
-            
-            # ၅ စက္ကန့်ပြည့်ပါက Loading နေရာတွင် အဟောထွက်လာပြီး အောက်၌ Contact Button ပါရှိခြင်း
-            await query.message.edit_caption(
-                caption=full_interpretation, 
-                reply_markup=get_contact_button(), 
-                parse_mode="HTML"
-            )
-            
-        except Exception as img_err:
-            logger.error(f"Image Edit Error: {img_err}")
-            fallback_card_img = "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg"
+        # 🛑 [CORE FIX] ပုံကို အတည့်/ပြောင်းပြန် ခွဲခြားပြီး အပြောင်းအလဲလုပ်ခြင်း
+        if is_upright:
+            # အတည့်ဆိုရင် မူရင်း Link အတိုင်း ပုံမှန်ပြမည်
+            final_photo = card["image_upright"]
+        else:
+            # ပြောင်းပြန်ဆိုရင် မူရင်းပုံကို Pillow ဖြင့် ၁၈၀ ဒီဂရီ ဇောက်ထိုးလှည့်ပြီး ပြမည်
             try:
-                await query.message.edit_media(
-                    media=InputMediaPhoto(
-                        media=fallback_card_img, 
-                        caption=f"🃏 <b>{card_name}</b>\n\n⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", 
-                        parse_mode="HTML"
-                    )
+                final_photo = get_rotated_image_bytes(card["image_upright"])
+            except Exception as e:
+                logger.error(f"Error rotating image: {e}")
+                final_photo = card["image_reversed"] # Fallback အနေနဲ့ json ထဲက အဟောင်းသုံးမည်
+
+        # Edited Animation ဖြင့် မက်ဆေ့ချ်များ ချက်ချင်း ပုံစံပြောင်းလဲခြင်း
+        if 'msgs_to_edit' in context.user_data:
+            m1_id, m2_id, m3_id, m4_id = context.user_data['msgs_to_edit']
+            
+            try:
+                # (၁) Card Name စာသီးသန့် ပြောင်းလဲခြင်း
+                await context.bot.edit_message_text(
+                    chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
                 )
+                
+                # (၂) Random Card ပုံသီးသန့် (အတည့် သို့မဟုတ် လှည့်ထားသော ပြောင်းပြန်ပုံ) သို့ ပြောင်းလဲခြင်း
+                await context.bot.edit_media(
+                    chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=final_photo)
+                )
+                
+                # (၃) Loading text သီးသန့် သို့ ပြောင်းလဲခြင်း
+                await context.bot.edit_message_text(
+                    chat_id=chat_id, message_id=m3_id,
+                    text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", parse_mode="HTML"
+                )
+                
+                # (၄) Contact Button အသစ် တပ်ဆင်ပေးခြင်း
+                await context.bot.edit_message_text(
+                    chat_id=chat_id, message_id=m4_id, text="🔮 <b>Astrologer နှင့် တိုက်ရိုက်ဆွေးနွေးရန်</b> 🔮",
+                    reply_markup=get_contact_button(), parse_mode="HTML"
+                )
+                
+                # ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
                 await asyncio.sleep(5)
-                await query.message.edit_caption(caption=full_interpretation, reply_markup=get_contact_button(), parse_mode="HTML")
-            except Exception:
-                pass
+                
+                # (၅) Loading text နေရာတွင် အဟောအပြည့်အစုံ ကွက်တိ ထွက်လာစေခြင်း
+                await context.bot.edit_message_text(
+                    chat_id=chat_id, message_id=m3_id, text=full_interpretation, parse_mode="HTML"
+                )
+                
+            except Exception as err:
+                logger.error(f"Animation Edit Error: {err}")
+                
+            del context.user_data['msgs_to_edit']
 
 def main():
     if not config.BOT_TOKEN:
