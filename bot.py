@@ -44,7 +44,7 @@ RED_TEXT_END = "</code>"
 def get_user_reply_keyboard():
     keyboard = [
         [KeyboardButton("🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်")],
-        [KeyboardButton("🔮 Contact with Astrologer")]
+        [KeyboardButton("🔮 Contact with Tarot Fortune Teller")]
     ]
     return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
 
@@ -52,7 +52,7 @@ def get_user_reply_keyboard():
 def get_contact_inline_button():
     url = f"https://t.me/{config.CREATOR_USERNAME}" if config.CREATOR_USERNAME else "https://t.me/"
     return InlineKeyboardMarkup([
-        [InlineKeyboardButton("Contact with Astrologer🔮 (10K💵)", url=url)]
+        [InlineKeyboardButton("Contact with Tarot Fortune Teller🔮(10K💵)", url=url)]
     ])
 
 # Dummy Web Server
