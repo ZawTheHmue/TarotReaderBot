@@ -6,7 +6,7 @@ import http.server
 import threading
 import os
 from datetime import datetime
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, InputMediaPhoto
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 import config
 
@@ -106,7 +106,6 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     user_id = update.effective_user.id
     today_str = datetime.now().strftime("%Y-%m-%d")
-    chat_id = query.message.chat_id
     
     # ၁။ "🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်" ကို နှိပ်လိုက်ချိန်
     if query.data == "start_tarot":
@@ -116,31 +115,16 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.message.reply_text(reject_msg, parse_mode="HTML")
                 return
         
-        # (က) စာသား သီးသန့် လာမည်
-        text_msg = await context.bot.send_message(
-            chat_id=chat_id,
-            text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>",
-            parse_mode="HTML"
-        )
-        
-        # (ခ) Card Back ပုံ သီးသန့် လာမည်
-        photo_msg = await context.bot.send_photo(
-            chat_id=chat_id,
-            photo=CARD_BACK_IMAGE
-        )
-        
-        # 🛑 [FIXED] ဆရာသမား ညွှန်ကြားချက်အရ အပေါ်ကစာသားကို ဖြုတ်ပြီး ခလုတ်သီးသန့်ပဲ ပို့ဆောင်ခြင်း
+        # 🛑 [FIXED] မလိုတဲ့ စာသားမက်ဆေ့ချ်တွေအကုန်ဖြုတ်ပြီး ပုံအောက်မှာ ခလုတ်ကို တခါတည်း တွဲလျက်ကပ်ထည့်ခြင်း
         inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🃏", callback_data="flip_card")]]
         reply_markup = InlineKeyboardMarkup(inline_kb)
         
-        button_msg = await context.bot.send_message(
-            chat_id=chat_id,
-            text="✨", # စာသားအရှည်ကြီးအစား အမြင်မရှုပ်အောင် ညင်သာတဲ့ Emoji လေးတစ်ခုပဲ သုံးထားပါတယ်
-            reply_markup=reply_markup
+        await query.message.reply_photo(
+            photo=CARD_BACK_IMAGE,
+            caption="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>",
+            reply_markup=reply_markup,
+            parse_mode="HTML"
         )
-        
-        # မက်ဆေ့ချ် ID (၃) ခုလုံးကို မှတ်သားထားခြင်း
-        context.user_data['msgs_to_delete'] = [text_msg.message_id, photo_msg.message_id, button_msg.message_id]
 
     # ၂။ "🃏ကတ်တစ်ကတ်ရွေးမည်🃏" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
     elif query.data == "flip_card":
@@ -149,19 +133,6 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if not TAROT_DATA:
             await query.message.reply_text("⚠️ ဟောချက်ဒေတာဖိုင် (tarot_data.json) မရှိသေးပါသဖြင့် ခေတ္တာစောင့်ဆိုင်းပေးပါ။")
             return
-
-        # asyncio.gather သုံးပြီး စာ၊ ကတ်၊ ခလုတ် သုံးခုလုံးကို တစ်ပြိုင်တည်း ဒိုင်းခနဲ ဖျက်ထုတ်ပစ်ခြင်း
-        if 'msgs_to_delete' in context.user_data:
-            delete_tasks = []
-            for msg_id in context.user_data['msgs_to_delete']:
-                delete_tasks.append(context.bot.delete_message(chat_id=chat_id, message_id=msg_id))
-            
-            try:
-                await asyncio.gather(*delete_tasks, return_exceptions=True)
-            except Exception as e:
-                logger.error(f"Batch delete error: {e}")
-                
-            del context.user_data['msgs_to_delete']
 
         # Random ကတ် ရွေးချယ်ခြင်း
         card_key = random.choice(list(TAROT_DATA.keys()))
@@ -183,44 +154,41 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # ချက်ချင်းပဲ Random Card ပုံ သီးသန့် အရင်ပေါ်လာမည်
-        img_msg = None
+        # 🛑 [3D FLIP SIMULATION EFFECT] Message ကို မဖျက်တော့ဘဲ မူရင်းပုံနေရာမှာတင် ပုံအသစ်နဲ့ လဲလှယ်ခြင်း
         try:
-            img_msg = await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=card_image
-            )
-        except Exception as img_err:
-            logger.error(f"Image send error: {img_err}")
-            fallback_card_img = "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg"
-            img_msg = await context.bot.send_photo(
-                chat_id=chat_id,
-                photo=fallback_card_img
-            )
-            
-        # အောက်က Tarot ဟောကိန်းများ ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading text သီးသန့် ပေါ်လာမည်
-        loading_text_msg = await context.bot.send_message(
-            chat_id=chat_id,
-            text=f"🃏 <b>{card_name}</b>\n\n⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
-            reply_markup=get_contact_button(),
-            parse_mode="HTML"
-        )
-        
-        # ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
-        await asyncio.sleep(5)
-        
-        # ၅ စက္ကန့်ပြည့်ပါက loading text နေရာတွင် အဟောထွက်လာရမည်
-        if loading_text_msg:
-            try:
-                await context.bot.edit_message_text(
-                    chat_id=chat_id,
-                    message_id=loading_text_msg.message_id,
-                    text=full_interpretation,
-                    reply_markup=get_contact_button(),
+            await query.message.edit_media(
+                media=InputMediaPhoto(
+                    media=card_image, 
+                    caption=f"🃏 <b>{card_name}</b>\n\n⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", 
                     parse_mode="HTML"
                 )
-            except Exception as e:
-                logger.error(f"Message text edit error: {e}")
+            )
+            
+            # ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
+            await asyncio.sleep(5)
+            
+            # ၅ စက္ကန့်ပြည့်ပါက Loading နေရာတွင် အဟောထွက်လာပြီး အောက်၌ Contact Button ပါရှိခြင်း
+            await query.message.edit_caption(
+                caption=full_interpretation, 
+                reply_markup=get_contact_button(), 
+                parse_mode="HTML"
+            )
+            
+        except Exception as img_err:
+            logger.error(f"Image Edit Error: {img_err}")
+            fallback_card_img = "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg"
+            try:
+                await query.message.edit_media(
+                    media=InputMediaPhoto(
+                        media=fallback_card_img, 
+                        caption=f"🃏 <b>{card_name}</b>\n\n⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", 
+                        parse_mode="HTML"
+                    )
+                )
+                await asyncio.sleep(5)
+                await query.message.edit_caption(caption=full_interpretation, reply_markup=get_contact_button(), parse_mode="HTML")
+            except Exception:
+                pass
 
 def main():
     if not config.BOT_TOKEN:
