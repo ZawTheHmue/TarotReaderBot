@@ -92,7 +92,7 @@ async def post_init(application: Application) -> None:
     asyncio.create_task(daily_holiday_wishes(application))
     logger.info("Background holiday task successfully attached to Application Lifespan!")
 
-# ကတ်ရွေးချယ်ခြင်း Setup ကို ပို့ပေးမည့် ဘုံ Function (Inline နှိပ်နှိပ်၊ Keyboard နှိပ်နှိပ် အလုပ်လုပ်ရန်)
+# ကတ်ရွေးချယ်ခြင်း Setup ကို ပို့ပေးမည့် ဘုံ Function
 async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAULT_TYPE):
     today_str = datetime.now().strftime("%Y-%m-%d")
     if choice_user_id != config.CREATOR_ID:
@@ -101,36 +101,36 @@ async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAUL
             await context.bot.send_message(chat_id=chat_id, text=reject_msg, parse_mode="HTML")
             return
 
-    # 🎯 ဆရာသမားရဲ့ ပုံအတိုင်း (၄) ဆင့် သီးသန့်စီ ဒေါင်လိုက် ထွက်လာခြင်း
+    # 🎯 မက်ဆေ့ချ် (၃) ခုပဲ သီးသန့်ထွက်မည် (အပိုစာသား လုံးဝအပြီးတိုင်ဖျက်ထားပါသည်)
     msg1 = await context.bot.send_message(
         chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
     )
     msg2 = await context.bot.send_photo(
         chat_id=chat_id, photo=CARD_BACK_IMAGE
     )
-    msg3 = await context.bot.send_message(
-        chat_id=chat_id, text="⬇️ကတ်ရွေးမည်⬇️"
-    )
     
-    # 🎯 အနီဝိုင်းပြထားတဲ့ နေရာ - အပိုစာသား လုံးဝမပါဘဲ inline k သီးသန့်ပဲ ထွက်မည်
+    # ⬇️ကတ်ရွေးမည်⬇️ တွင် inline keyboard ကို တွဲလျက်ကပ်ပို့ခြင်းဖြင့် ကြားထဲက စာသားအပိုကို ဖျက်ထုတ်ခြင်း
     inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🪄", callback_data="flip_card")]]
-    msg4 = await context.bot.send_message(
-        chat_id=chat_id, text="🃏ကတ်တစ်ကတ်ရွေးမည်🪄", reply_markup=InlineKeyboardMarkup(inline_kb)
+    msg3 = await context.bot.send_message(
+        chat_id=chat_id, text="⬇️ကတ်ရွေးမည်⬇️", reply_markup=InlineKeyboardMarkup(inline_kb)
     )
     
-    context.user_data['msgs_to_edit'] = [msg1.message_id, msg2.message_id, msg3.message_id, msg4.message_id]
+    # ပြောင်းလဲရန်အတွက် မက်ဆေ့ချ် ID (၃) ခုကို သေချာမှတ်သားထားခြင်း
+    context.user_data['msgs_to_edit'] = [msg1.message_id, msg2.message_id, msg3.message_id]
 
-# /start command - 🎯 အစိမ်းဝိုင်းပြထားတဲ့အတိုင်း မက်ဆေ့ချ်နှစ်ခုပဲ ပေါ်စေခြင်း
+# /start command
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     ALL_USERS.add(user_id)
     
     if user_id == config.CREATOR_ID:
         await update.message.reply_text("မင်္ဂလာပါ Creator ဆရာသမားဗျာ။ သင်သည် အကန့်အသတ်မရှိ အသုံးပြုနိုင်ပါသည်။", reply_markup=get_user_reply_keyboard())
+    else:
+        await update.message.reply_text("မင်္ဂလာပါဗျာ။ Tarot Reader Bot မှ ကြိုဆိုပါသည်။", reply_markup=get_user_reply_keyboard())
     
     inline_keyboard = [[InlineKeyboardButton("🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်", callback_data="start_tarot")]]
     await update.message.reply_text(
-        "🔮 Tarot Reader Bot မှ ကြိုဆိုပါတယ်ဗျာ။ အောက်ပါခလုတ်ကိုနှိပ်၍ ဗေဒင်မေးမြန်းနိုင်ပါသည်။",
+        "🔮 အောက်ပါခလုတ်ကိုနှိပ်၍ ဗေဒင်မေးမြန်းနိုင်ပါသည်။",
         reply_markup=InlineKeyboardMarkup(inline_keyboard)
     )
 
@@ -189,43 +189,42 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # 🎯 [🎯 EXACT EDIT/REPLACE FLOW] ဆရာသမားရဲ့ ညွှန်ကြားချက်အတိုင်း ကွက်တိနေရာချခြင်း
+        # 🎯 [CORE FIX] Telegram Server က ငြင်းပယ်ခြင်းမရှိစေရန် အစီအစဉ်တကျ ပြိုင်တူ Edit ဖြစ်စေမည့် စနစ်
         if 'msgs_to_edit' in context.user_data:
-            m1_id, m2_id, m3_id, m4_id = context.user_data['msgs_to_edit']
+            m1_id, m2_id, m3_id = context.user_data['msgs_to_edit']
             
             try:
-                # ၁။ သင့်မေးခွန်း... နေရာမှာ -> Random Card ရဲ့ Name ကို edit ဖြင့် ချိန်း
+                # ၁။ "သင့်မေးခွန်း..." နေရာကို -> Random Card Name အဖြစ် ချက်ချင်းပြောင်းလဲခြင်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
                 )
                 
-                # ၂။ Photo နေရာမှာ -> Random Card ပုံကို replace ဖြင့် ချိန်း
+                # ၂။ Photo နေရာကို -> Random Card ပုံအသစ်ဖြင့် (Replace) ချောမွေ့စွာလဲလှယ်ခြင်း
                 await context.bot.edit_media(
                     chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
                 )
                 
-                # ၃။ ကတ်ရွေးမည် နေရာမှာ -> Tarot ဟောကိန်းများ.....ခေတ္တစောင့်ပါ⏳ ကို edit ဖြင့် ချိန်း
+                # ၃။ "⬇️ကတ်ရွေးမည်⬇️" နှင့် ခလုတ်နေရာကို -> Loading စာသား + Contact Inline Keyboard သို့ ချက်ချင်းပြောင်းလဲခြင်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id,
-                    text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", parse_mode="HTML"
+                    text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
+                    reply_markup=get_contact_inline_button(),
+                    parse_mode="HTML"
                 )
                 
-                # ၄။ ကတ်တစ်ကတ်ရွေးမည် inline k ကို -> Contact with Astrologer inline k ဖြင့် edit ချိန်း
-                await context.bot.edit_message_text(
-                    chat_id=chat_id, message_id=m4_id, text="🔮 <b>Contact Information</b> 🔮",
-                    reply_markup=get_contact_inline_button(), parse_mode="HTML"
-                )
-                
-                # ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
+                # 🎯 ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
                 await asyncio.sleep(5)
                 
-                # ၅။ ၅ စက္ကန့်ပြည့်ရင် Loading text (မက်ဆေ့ချ် နံပါတ် ၃) နေရာမှာတင် အဟောကို edit နဲ့ ထပ်ချိန်း
+                # ၄။ ၅ စက္ကန့်ပြည့်ပါက Loading စာသားနေရာတွင် -> အဟောအပြည့်အစုံ ကွက်တိ Edit ထပ်မံဖြစ်ပေါ်စေခြင်း
                 await context.bot.edit_message_text(
-                    chat_id=chat_id, message_id=m3_id, text=full_interpretation, parse_mode="HTML"
+                    chat_id=chat_id, message_id=m3_id,
+                    text=full_interpretation,
+                    reply_markup=get_contact_inline_button(),
+                    parse_mode="HTML"
                 )
                 
             except Exception as err:
-                logger.error(f"Animation Edit Error: {err}")
+                logger.error(f"Animation Edit Failure: {err}")
                 
             del context.user_data['msgs_to_edit']
 
@@ -236,12 +235,11 @@ def main():
 
     run_health_server()
 
-    # User Keyboard ကို အမြဲတမ်း တပ်ဆင်ပြသထားရန် Application ဆောက်ခြင်း
     application = Application.builder().token(config.BOT_TOKEN).post_init(post_init).build()
 
     application.add_handler(CommandHandler("start", start))
     
-    # User ရဲ့ စာသားရိုက်နှိပ်မှု သို့မဟုတ် Reply Keyboard နှိပ်မှုများကို ဖမ်းယူရန် Handler
+    # User Reply Keyboard ခလုတ်များကို ဖမ်းယူမည့် Handler
     from telegram.ext import MessageHandler, filters
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_message))
     
