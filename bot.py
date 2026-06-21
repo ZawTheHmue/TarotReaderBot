@@ -32,7 +32,7 @@ except Exception as e:
 USER_USAGE_LOG = {}
 ALL_USERS = set()
 
-CARD_BACK_IMAGE = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=500&auto=format&fit=crop"
+CARD_BACK_IMAGE = "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/back.png"
 RED_TEXT_START = "<code>"
 RED_TEXT_END = "</code>"
 
@@ -97,7 +97,7 @@ async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAUL
     today_str = datetime.now().strftime("%Y-%m-%d")
     if choice_user_id != config.CREATOR_ID:
         if USER_USAGE_LOG.get(choice_user_id) == today_str:
-            reject_msg = f"<b>{RED_TEXT_START}😥၀မ်းနည်းပါတယ်ခင်ဗျာ...Tarot ဟောကိုန်းများအား တစ်နေ့လျင် တစ်ကြိမ်သာ အသုံးပြုနိုင်မည် ဖြစ်ပါတယ်...😥{RED_TEXT_END}</b>"
+            reject_msg = f"<b>{RED_TEXT_START}😥၀မ်းနည်းပါတယ်ခင်ဗျာ...Tarot ဟောကိန်းများအား တစ်နေ့လျင် တစ်ကြိမ်သာ အသုံးပြုနိုင်မည် ဖြစ်ပါတယ်...😥{RED_TEXT_END}</b>"
             await context.bot.send_message(chat_id=chat_id, text=reject_msg, parse_mode="HTML")
             return
 
@@ -216,8 +216,8 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 logger.error(f"Media Link/Type Error (Wrong Content Type): {media_err}")
                 # ပုံ Link ပျက်နေလျှင် Card Back အဟောင်းကိုပဲ ဆက်ထားပြီး Flow ကို ရှေ့ဆက်စေပါသည်
             
-            # ⏱️ ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
-            await asyncio.sleep(5)
+            # ⏱️ 3 စက္ကန့် စောင့်ဆိုင်းခြင်း
+            await asyncio.sleep(3)
             
             # ၂။ ၅ စက္ကန့်ပြည့်ပါက Loading နေရာတွင် အဟောအပြည့်အစုံကို Edit ဖြင့် တည်ငြိမ်စွာ ချိန်းခြင်း
             try:
