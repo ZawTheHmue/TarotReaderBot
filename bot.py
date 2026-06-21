@@ -101,7 +101,7 @@ async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAUL
             await context.bot.send_message(chat_id=chat_id, text=reject_msg, parse_mode="HTML")
             return
 
-    # 🎯 မက်ဆေ့ချ် (၃) ခုပဲ သီးသန့်ထွက်မည် (အပိုစာသား လုံးဝအပြီးတိုင်ဖျက်ထားပါသည်)
+    # မက်ဆေ့ချ် (၃) ခု သီးသန့်ထွက်မည် (အပိုစာသား လုံးဝမပါပါ)
     msg1 = await context.bot.send_message(
         chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
     )
@@ -109,13 +109,11 @@ async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAUL
         chat_id=chat_id, photo=CARD_BACK_IMAGE
     )
     
-    # ⬇️ကတ်ရွေးမည်⬇️ တွင် inline keyboard ကို တွဲလျက်ကပ်ပို့ခြင်းဖြင့် ကြားထဲက စာသားအပိုကို ဖျက်ထုတ်ခြင်း
     inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🪄", callback_data="flip_card")]]
     msg3 = await context.bot.send_message(
         chat_id=chat_id, text="⬇️ကတ်ရွေးမည်⬇️", reply_markup=InlineKeyboardMarkup(inline_kb)
     )
     
-    # ပြောင်းလဲရန်အတွက် မက်ဆေ့ချ် ID (၃) ခုကို သေချာမှတ်သားထားခြင်း
     context.user_data['msgs_to_edit'] = [msg1.message_id, msg2.message_id, msg3.message_id]
 
 # /start command
@@ -189,22 +187,23 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # 🎯 [CORE FIX] Telegram Server က ငြင်းပယ်ခြင်းမရှိစေရန် အစီအစဉ်တကျ ပြိုင်တူ Edit ဖြစ်စေမည့် စနစ်
         if 'msgs_to_edit' in context.user_data:
             m1_id, m2_id, m3_id = context.user_data['msgs_to_edit']
             
             try:
-                # ၁။ "သင့်မေးခွန်း..." နေရာကို -> Random Card Name အဖြစ် ချက်ချင်းပြောင်းလဲခြင်း
+                # ⚡ [အဆင့် ၁ - ချက်ချင်းပြောင်းမည့်အပိုင်း] ခလုတ်နှိပ်လိုက်တာနဲ့ ချက်ချင်း မျက်စိရှေ့တင် ဒိုင်းခနဲ အကုန်ပြောင်းသွားမည်
+                
+                # ၁။ သင့်မေးခွန်း... နေရာတွင် -> Card Name အဖြစ် ချက်ချင်းပြောင်းခြင်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
                 )
                 
-                # ၂။ Photo နေရာကို -> Random Card ပုံအသစ်ဖြင့် (Replace) ချောမွေ့စွာလဲလှယ်ခြင်း
-                await context.bot.edit_media(
+                # ၂။ Photo နေရာတွင် -> Random ကတ်ပုံအသစ်သို့ ချက်ချင်း (Replace) လဲလှယ်ခြင်း
+                await context.bot.edit_message_media(
                     chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
                 )
                 
-                # ၃။ "⬇️ကတ်ရွေးမည်⬇️" နှင့် ခလုတ်နေရာကို -> Loading စာသား + Contact Inline Keyboard သို့ ချက်ချင်းပြောင်းလဲခြင်း
+                # ၃။ ⬇️ကတ်ရွေးမည်⬇️ နှင့် Inline ခလုတ်ဟောင်း နေရာတွင် -> Loading စာသား + Contact Button သို့ ချက်ချင်းပြောင်းလဲခြင်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id,
                     text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
@@ -212,10 +211,10 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     parse_mode="HTML"
                 )
                 
-                # 🎯 ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
+                # ⏱️ [အဆင့် ၂ - စောင့်ဆိုင်းခြင်းအပိုင်း] ပြောင်းလဲမှုတွေ ချက်ချင်းလုပ်ပြီးမှ ၅ စက္ကန့် တိတိ စောင့်ခိုင်းခြင်း
                 await asyncio.sleep(5)
                 
-                # ၄။ ၅ စက္ကန့်ပြည့်ပါက Loading စာသားနေရာတွင် -> အဟောအပြည့်အစုံ ကွက်တိ Edit ထပ်မံဖြစ်ပေါ်စေခြင်း
+                # ⚡ [အဆင့် ၃ - ဟောချက်ထုတ်မည့်အပိုင်း] ၅ စက္ကန့်ပြည့်မှ Loading စာသားနေရာတွင် အဟောကို ကွက်တိ Edit ထပ်လုပ်ခြင်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id,
                     text=full_interpretation,
@@ -239,7 +238,7 @@ def main():
 
     application.add_handler(CommandHandler("start", start))
     
-    # User Reply Keyboard ခလုတ်များကို ဖမ်းယူမည့် Handler
+    # User Reply Keyboard Handler
     from telegram.ext import MessageHandler, filters
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_message))
     
