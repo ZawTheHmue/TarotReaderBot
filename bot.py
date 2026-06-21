@@ -14,10 +14,11 @@ import config
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Data Files Loading
+# Data Files Loading (GitHub မှ ပါလာသော Local JSON ဖိုင်ကို တိုက်ရိုက်ဖတ်ခြင်း)
 try:
     with open('tarot_data.json', 'r', encoding='utf-8') as f:
         TAROT_DATA = json.load(f)
+    logger.info("tarot_data.json ကို GitHub ဖိုင်မှ အောင်မြင်စွာ ဖတ်ရှုပြီးပါပြီ။")
 except Exception as e:
     logger.error(f"Error loading tarot_data.json: {e}")
     TAROT_DATA = {}
@@ -32,7 +33,10 @@ except Exception as e:
 USER_USAGE_LOG = {}
 ALL_USERS = set()
 
+# Image Assets Configuration
 CARD_BACK_IMAGE = "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/back.png"
+BOT_BACKGROUND_IMAGE = "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/bg.jpg"
+
 RED_TEXT_START = "<code>"
 RED_TEXT_END = "</code>"
 
@@ -105,6 +109,7 @@ async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAUL
     msg1 = await context.bot.send_message(
         chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
     )
+    # ကတ်ကျောဖုံးပုံကို ပြသပေးခြင်း
     msg2 = await context.bot.send_photo(
         chat_id=chat_id, photo=CARD_BACK_IMAGE
     )
@@ -206,15 +211,13 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             except Exception as e:
                 logger.error(f"Text Edit Error: {e}")
 
-            # 🎯 [CRITICAL FIX] ပုံပြောင်းလဲခြင်းလုပ်ငန်းကို Error ဒဏ်ခံနိုင်ရန် သီးသန့် try-except ခွဲထုတ်ခြင်း
-            # ဒါကြောင့် JSON ထဲက ပုံ Link မှားနေရင်တောင် အဟောထွက်မယ့် Flow ကြီး တစ်ခုလုံး လုံးဝ ရပ်မသွားတော့ပါဘူး။
+            # 🎯 ပုံပြောင်းလဲခြင်းလုပ်ငန်းကို Error ဒဏ်ခံနိုင်ရန် သီးသန့် try-except ခွဲထုတ်ခြင်း
             try:
                 await context.bot.edit_message_media(
                     chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
                 )
             except Exception as media_err:
                 logger.error(f"Media Link/Type Error (Wrong Content Type): {media_err}")
-                # ပုံ Link ပျက်နေလျှင် Card Back အဟောင်းကိုပဲ ဆက်ထားပြီး Flow ကို ရှေ့ဆက်စေပါသည်
             
             # ⏱️ 3 စက္ကန့် စောင့်ဆိုင်းခြင်း
             await asyncio.sleep(3)
