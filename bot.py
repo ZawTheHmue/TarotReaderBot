@@ -187,43 +187,48 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # 🎯 [PROFESSIONAL STATE CONTROL] State ပဋိပက္ခမဖြစ်အောင် pop စနစ်ဖြင့် ID များကို သိမ်းဆည်းခြင်း
         msgs_to_edit = context.user_data.pop('msgs_to_edit', None)
         
         if msgs_to_edit and len(msgs_to_edit) == 3:
             m1_id, m2_id, m3_id = msgs_to_edit
             
+            # ၁။ Card Name နှင့် Loading စာသား + Contact Button ကို ချက်ချင်းပြောင်းလဲခြင်း
             try:
-                # 🎯 [PROFESSIONAL GATHER FLOW] Telegram Rate limit မထိစေရန်နှင့် အချိန်ကိုက်ကွက်တိဖြစ်စေရန်
-                # Request ၃ ခုလုံးကို တစ်ပြိုင်တည်း Thread Pool/Pipeline ထဲ စုပြုံမောင်းနှင်လိုက်ခြင်း (ချက်ချင်းပြောင်းလဲမည်)
-                await asyncio.gather(
-                    context.bot.edit_message_text(
-                        chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
-                    ),
-                    context.bot.edit_message_media(
-                        chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
-                    ),
-                    context.bot.edit_message_text(
-                        chat_id=chat_id, message_id=m3_id,
-                        text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
-                        reply_markup=get_contact_inline_button(),
-                        parse_mode="HTML"
-                    )
+                await context.bot.edit_message_text(
+                    chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
                 )
-                
-                # ⏱️ ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
-                await asyncio.sleep(5)
-                
-                # 🎯 ၅ စက္ကန့်ပြည့်ပါက Loading နေရာတွင် အဟောအပြည့်အစုံကို Edit ဖြင့် တည်ငြိမ်စွာ အစားထိုးခြင်း
+                await context.bot.edit_message_text(
+                    chat_id=chat_id, message_id=m3_id,
+                    text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
+                    reply_markup=get_contact_inline_button(),
+                    parse_mode="HTML"
+                )
+            except Exception as e:
+                logger.error(f"Text Edit Error: {e}")
+
+            # 🎯 [CRITICAL FIX] ပုံပြောင်းလဲခြင်းလုပ်ငန်းကို Error ဒဏ်ခံနိုင်ရန် သီးသန့် try-except ခွဲထုတ်ခြင်း
+            # ဒါကြောင့် JSON ထဲက ပုံ Link မှားနေရင်တောင် အဟောထွက်မယ့် Flow ကြီး တစ်ခုလုံး လုံးဝ ရပ်မသွားတော့ပါဘူး။
+            try:
+                await context.bot.edit_message_media(
+                    chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
+                )
+            except Exception as media_err:
+                logger.error(f"Media Link/Type Error (Wrong Content Type): {media_err}")
+                # ပုံ Link ပျက်နေလျှင် Card Back အဟောင်းကိုပဲ ဆက်ထားပြီး Flow ကို ရှေ့ဆက်စေပါသည်
+            
+            # ⏱️ ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
+            await asyncio.sleep(5)
+            
+            # ၂။ ၅ စက္ကန့်ပြည့်ပါက Loading နေရာတွင် အဟောအပြည့်အစုံကို Edit ဖြင့် တည်ငြိမ်စွာ ချိန်းခြင်း
+            try:
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id,
                     text=full_interpretation,
                     reply_markup=get_contact_inline_button(),
                     parse_mode="HTML"
                 )
-                
-            except Exception as err:
-                logger.error(f"Animation Professional Edit Failure: {err}")
+            except Exception as final_err:
+                logger.error(f"Final Interpretation Edit Failure: {final_err}")
 
 def main():
     if not config.BOT_TOKEN:
