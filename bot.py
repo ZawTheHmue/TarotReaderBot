@@ -97,6 +97,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     user_id = update.effective_user.id
     today_str = datetime.now().strftime("%Y-%m-%d")
+    chat_id = query.message.chat_id
     
     # ၁။ "🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်" ကို နှိပ်လိုက်ချိန်
     if query.data == "start_tarot":
@@ -106,17 +107,16 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.message.reply_text(reject_msg, parse_mode="HTML")
                 return
         
-        # 🛑 [FIXED] ဆရာသမား မှာကြားချက်အရ တစ်ဆင့်ချင်းစီ သီးသန့်စီ ပို့ဆောင်ခြင်း
         # (က) စာသား သီးသန့် လာမည်
         text_msg = await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=chat_id,
             text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>",
             parse_mode="HTML"
         )
         
         # (ခ) Card Back ပုံ သီးသန့် လာမည်
         photo_msg = await context.bot.send_photo(
-            chat_id=query.message.chat_id,
+            chat_id=chat_id,
             photo=CARD_BACK_IMAGE
         )
         
@@ -124,12 +124,11 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         inline_kb = [[InlineKeyboardButton("🃏 ကတ်တစ်ကတ်ရွေးမည်", callback_data="flip_card")]]
         reply_markup = InlineKeyboardMarkup(inline_kb)
         button_msg = await context.bot.send_message(
-            chat_id=query.message.chat_id,
-            text="⬇️ အောက်ပါခလုတ်ကိုနှိပ်၍ ကတ်ကို ရွေးချယ်ပါ ⬇️",
+            chat_id=chat_id,
             reply_markup=reply_markup
         )
         
-        # နောက်တစ်ဆင့်မှာ ပြန်ဖျက်နိုင်ရန် မက်ဆေ့ချ် ID များကို သိမ်းဆည်းထားခြင်း
+        # မက်ဆေ့ချ် ID (၃) ခုလုံးကို သေချာမှတ်ထားခြင်း
         context.user_data['msgs_to_delete'] = [text_msg.message_id, photo_msg.message_id, button_msg.message_id]
 
     # ၂။ "🃏 ကတ်တစ်ကတ်ရွေးမည်" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
@@ -140,13 +139,19 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.reply_text("⚠️ ဟောချက်ဒေတာဖိုင် (tarot_data.json) မရှိသေးပါသဖြင့် ခေတ္တာစောင့်ဆိုင်းပေးပါ။")
             return
 
-        # 🛑 [ANIMATION EFFECT] အပေါ်က ပေါ်ခဲ့တဲ့ သီးသန့် မက်ဆေ့ချ် (၃) ခုလုံးကို ဒိုင်းခနဲ ပြိုင်တူ ဖျက်ပစ်ခြင်း
+        # 🛑 [FIXED ANIMATION] asyncio.gather သုံးပြီး စာ၊ ကတ်၊ ခလုတ် သုံးခုလုံးကို တစ်ပြိုင်တည်း ဒိုင်းခနဲ ဖျက်ထုတ်ပစ်ခြင်း
         if 'msgs_to_delete' in context.user_data:
+            delete_tasks = []
             for msg_id in context.user_data['msgs_to_delete']:
-                try:
-                    await context.bot.delete_message(chat_id=query.message.chat_id, message_id=msg_id)
-                except Exception:
-                    pass
+                # ဖြတ်မယ့် Task တွေကို စာရင်းထဲ ကြိုစုထည့်ခြင်း
+                delete_tasks.append(context.bot.delete_message(chat_id=chat_id, message_id=msg_id))
+            
+            try:
+                # စုထားတဲ့ Task အားလုံးကို ပြိုင်တူ မောင်းနှင်ပြီး ချက်ချင်းဖျက်ခြင်း
+                await asyncio.gather(*delete_tasks, return_exceptions=True)
+            except Exception as e:
+                logger.error(f"Batch delete error: {e}")
+                
             del context.user_data['msgs_to_delete']
 
         # Random ကတ် ရွေးချယ်ခြင်း
@@ -169,38 +174,37 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # 🛑 [NEW FLOW] ချက်ချင်းပဲ Random Card ပုံ သီးသန့် အရင်ပေါ်လာမည်
+        # ချက်ချင်းပဲ Random Card ပုံ သီးသန့် အရင်ပေါ်လာမည်
         img_msg = None
         try:
             img_msg = await context.bot.send_photo(
-                chat_id=query.message.chat_id,
+                chat_id=chat_id,
                 photo=card_image
             )
         except Exception as img_err:
             logger.error(f"Image send error: {img_err}")
             fallback_card_img = "https://upload.wikimedia.org/wikipedia/commons/9/90/RWS_Tarot_00_Fool.jpg"
             img_msg = await context.bot.send_photo(
-                chat_id=query.message.chat_id,
+                chat_id=chat_id,
                 photo=fallback_card_img
             )
             
-        # 🛑 အောက်က Tarot ဟောကိန်းများ ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading text သီးသန့် ပေါ်လာမည်
-        # Contact Button လည်း တစ်ပါတည်း တပ်ဆင်ထားမည်
+        # အောက်က Tarot ဟောကိန်းများ ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading text သီးသန့် ပေါ်လာမည်
         loading_text_msg = await context.bot.send_message(
-            chat_id=query.message.chat_id,
+            chat_id=chat_id,
             text=f"🃏 <b>{card_name}</b>\n\n⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
             reply_markup=get_contact_button(),
             parse_mode="HTML"
         )
         
-        # 🛑 ဆရာသမား မှာကြားချက်အရ ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
+        # ၅ စက္ကန့် တိတိ စောင့်ဆိုင်းခြင်း
         await asyncio.sleep(5)
         
         # ၅ စက္ကန့်ပြည့်ပါက loading text နေရာတွင် အဟောထွက်လာရမည်
         if loading_text_msg:
             try:
                 await context.bot.edit_message_text(
-                    chat_id=query.message.chat_id,
+                    chat_id=chat_id,
                     message_id=loading_text_msg.message_id,
                     text=full_interpretation,
                     reply_markup=get_contact_button(),
@@ -214,7 +218,6 @@ def main():
         print("Error: TELEGRAM_BOT_TOKEN missing!")
         return
 
-    # Run dummy server in background thread
     threading.Thread(target=run_health_server, daemon=True).start()
 
     application = Application.builder().token(config.BOT_TOKEN).build()
