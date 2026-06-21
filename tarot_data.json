@@ -419,8 +419,8 @@
   },
   "wands_01": {
     "name_upright": "Ace of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_01.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_01.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w01.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w01.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် စိတ်လှုပ်ရှားစရာကောင်းသော အစပြုခြင်းနှင့် စိတ်အားထက်သန်မှုကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ ရုတ်တရက် ရင်ခုန်ရမည့်သူ၊ မိမိအပေါ် အလွန်စိတ်ဝင်စားမည့်သူနှင့် ဆုံတွေ့ရတတ်ပြီး အချစ်သစ်တစ်ခု စတင်ရန် အခွင့်အလမ်း အလွန်ကောင်းမွန်သည်။ စုံတွဲများအတွက်မူ ဆက်ဆံရေးတွင် အချစ်စိတ်များ ပြန်လည်ဆန်းသစ်လာပြီး ပိုမိုတက်ကြွရွှင်လန်းသော အဆင့်တစ်ခုသို့ တက်လှမ်းနိုင်မည် ဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် အစီအစဉ်သစ်များ၊ လုပ်ငန်းခွင်အသစ် သို့မဟုတ် ပရောဂျက်အသစ်များ စတင်ရန် အလွန်ကောင်းမွန်သော နိမိတ်ဖြစ်သည်။ တီထွင်ဖန်တီးနိုင်စွမ်းနှင့် စွမ်းအင်များ ပြည့်ဝနေပြီး စိန်ခေါ်မှုများကို ရဲရဲဝံဝံ ရင်ဆိုင်နိုင်မည်။ ငွေကြေးပိုင်းတွင် လမ်းကြောင်းသစ်များမှ ဝင်ငွေရရှိမည့် အခွင့်အလမ်းများ ပေါ်ပေါက်လာတတ်သဖြင့် စတင်အကောင်အထည်ဖော်ရန် အချိန်ကောင်းဖြစ်သည်။",
@@ -438,8 +438,8 @@
   },
   "wands_02": {
     "name_upright": "Two of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_02.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_02.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w02.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w02.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် အနာဂတ်အတွက် စီစဉ်ခြင်းနှင့် ရွေးချယ်မှုများကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ အချစ်ရေးတွင် လမ်းကြောင်းသစ်များ ရှာဖွေလိုစိတ် ရှိနေပြီး တစ်ဦးထက်ပိုသော ရွေးချယ်မှုများ ကြုံရတတ်သည်။ စုံတွဲများအတွက်မူ ရှည်လျားသော အနာဂတ်ခရီးလမ်း (ဥပမာ- အတူတူ နေထိုင်ရန် သို့မဟုတ် ခရီးဝေးသွားရန်) အတွက် တိုင်ပင်ဆွေးနွေးပြီး အစီအစဉ်ချမှတ်ရမည့် ကာလဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် လုပ်ငန်းချဲ့ထွင်ရန် သို့မဟုတ် ရေရှည်စီမံကိန်းများ ချမှတ်ရန် အလွန်ကောင်းမွန်သော အချိန်ဖြစ်သည်။ နိုင်ငံရပ်ခြားနှင့် ချိတ်ဆက်ဆောင်ရွက်ရသော အလုပ်များ၊ ကုန်သွယ်မှုများ အလားအလာ ကောင်းမွန်သည်။ ငွေကြေးပိုင်းတွင် ရေရှည်ရင်းနှီးမြှုပ်နှံမှုများအတွက် စတင်ပြင်ဆင်သင့်ပြီး အခွင့်အလမ်းသစ်များကို ရှာဖွေနိုင်မည်။",
@@ -457,8 +457,8 @@
   },
   "wands_03": {
     "name_upright": "Three of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_03.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_03.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w03.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w03.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် ဆက်ဆံရေး တိုးတက်ခြင်းနှင့် အောင်မြင်မှုများကို မျှော်လင့်နိုင်ခြင်းကို ပြသသည်။ စုံတွဲများအတွက်မူ ရှေ့ဆက်ရမည့် ဘဝခရီးလမ်းသည် ပိုမိုပွင့်လင်း ကောင်းမွန်လာမည်ဖြစ်ပြီး အတူတကွ တိုးတက်မှုကို ခံစားရမည်။ လူပျိုလူလွတ်များအဖို့ ခရီးသွားလာရင်း သို့မဟုတ် အလုပ်ကိစ္စများမှတစ်ဆင့် စိတ်ဝင်စားစရာကောင်းသူနှင့် ဆုံတွေ့ရတတ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် မိမိစိုက်ပျိုးထားသော အားထုတ်မှုများ၏ ရလဒ်ကောင်းများကို စတင်မြင်တွေ့ရမည့် ကာလဖြစ်သည်။ ကုန်သွယ်မှု၊ သွင်းကုန်ထုတ်ကုန် သို့မဟုတ် နယ်ပယ်သစ်များသို့ ခြေဆန့်ခြင်းများ အထူးအောင်မြင်လိမ့်မည်။ ငွေကြေးပိုင်းတွင် စီးဆင်းမှု ကောင်းမွန်နေမည်ဖြစ်ပြီး ရေရှည်အမြတ်အစွန်းများ ဝင်ရောက်လာမည့် နိမိတ်ဖြစ်သည်။",
@@ -476,8 +476,8 @@
   },
   "wands_04": {
     "name_upright": "Four of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_04.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_04.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w04.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w04.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် အလွန်အမင်း ပျော်ရွှင်စရာကောင်းသော တည်ငြိမ်မှု၊ အိမ်ထောင်ပြုခြင်းနှင့် အောင်မြင်မှုကို ပြသသည်။ စုံတွဲများအတွက်မူ စေ့စပ်ပွဲ၊ မင်္ဂလာပွဲ ကျင်းပရတတ်ခြင်း သို့မဟုတ် အတူတကွ အိမ်ထောင်စုအသစ် တည်ဆောက်ရမည့် မင်္ဂလာအချိန်အခါ ဖြစ်သည်။ လူပျိုလူလွတ်များအဖို့ မိမိဘဝကို တည်ငြိမ်အေးချမ်းစေမည့် ဖူးစာဖက်နှင့် မကြာမီ ဆုံတွေ့ရတတ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် အောင်မြင်မှုများကို မိသားစု သို့မဟုတ် လုပ်ဖော်ကိုင်ဖက်များနှင့်အတူ အောင်မြင်စွာ ဆင်နွှဲရမည့် အချိန်ဖြစ်သည်။ လုပ်ငန်းခွင် တည်ငြိမ်မှု ရရှိပြီး အကျိုးအမြတ် အမြောက်အမြား ဝင်ရောက်လာမည်။ အိမ်ခြံမြေ သို့မဟုတ် မိသားစုပိုင် လုပ်ငန်းများ အထူးကောင်းမွန်သည်။",
@@ -495,8 +495,8 @@
   },
   "wands_05": {
     "name_upright": "Five of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_05.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_05.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_05.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_05.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် ပြိုင်ဆိုင်မှုပြင်းထန်ခြင်း၊ အမြင်မတူဘဲ မကြာခဏ ငြင်းခုံရခြင်းကို ပြသသည်။ စုံတွဲများအကြားတွင် အသေးအဖွဲ ကိစ္စရပ်များမှစ၍ အတ္တပြိုင်ကာ ရန်ဖြစ်ရတတ်သဖြင့် စိတ်လျှော့ရန် လိုအပ်သည်။ လူပျိုလူလွတ်များအဖို့ မိမိနှစ်သက်သူကို ရရှိရန်အတွက် အခြားသူများနှင့် ပြိုင်ဆိုင်ရတတ်သော ကာလဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် လုပ်ငန်းခွင်၌ ပြိုင်ဆိုင်မှု အလွန်ပြင်းထန်နေခြင်း သို့မဟုတ် အဖွဲ့အစည်းအတွင်း အယူအဆကွဲလွဲမှုများကြောင့် ကမောက်ကမ ဖြစ်နေတတ်သည်။ ရုန်းကန်ရမည့် အချိန်ဖြစ်သည်။ ငွေကြေးပိုင်းတွင် အဝင်ထက် အထွက်က မြန်နေပြီး ငွေကြေးအတွက် အပြိုင်အဆိုင် ကြိုးစားရှာဖွေရတတ်သည်။",
@@ -514,8 +514,8 @@
   },
   "wands_06": {
     "name_upright": "Six of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_06.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_06.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w06.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w06.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် အောင်မြင်ခြင်း၊ အများက အသိအမှတ်ပြုခြင်းနှင့် ပျော်ရွှင်မှုကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ မိမိနှစ်သက်သူ၏ အချစ်ကို အောင်မြင်စွာ ရရှိတတ်ပြီး ပတ်ဝန်းကျင်ကပါ သဘောတူ ချီးကျူးရမည့် အခြေအနေ ဖြစ်သည်။ စုံတွဲများအတွက်မူ ဆက်ဆံရေးတွင် ကြုံတွေ့နေရသော အခက်အခဲများကို အတူတကွ အောင်မြင်စွာ ကျော်လွှားနိုင်ပြီး ပိုမိုခိုင်မာသော အဆင့်သို့ ရောက်ရှိမည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် အထူးကံကောင်းသော အောင်မြင်မှု နိမိတ်ဖြစ်သည်။ မိမိ၏ ကြိုးစားအားထုတ်မှုများကြောင့် နာမည်ကျော်ကြားခြင်း၊ ရာထူးတိုးခြင်း သို့မဟုတ် ဆုတံဆိပ်များ ရရှိတတ်သည်။ ငွေကြေးပိုင်းတွင် အကျိုးအမြတ် အမြောက်အမြား ဝင်ရောက်လာမည်ဖြစ်ပြီး လူအများက မိမိ၏ စွမ်းဆောင်ရည်ကို လေးစားရမည့် အချိန်ဖြစ်သည်။",
@@ -533,8 +533,8 @@
   },
   "wands_07": {
     "name_upright": "Seven of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_07.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_07.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w07.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w07.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် မိမိ၏ အချစ်ရေးကို ကာကွယ်ရခြင်းနှင့် စိန်ခေါ်မှုများကို ရင်ဆိုင်ရခြင်းကို ပြသသည်။ စုံတွဲများအတွက်မူ ပတ်ဝန်းကျင် သို့မဟုတ် မိသားစု၏ ကန့်ကွက်မှုများကို ကြုံရတတ်သော်လည်း လက်မလျှော့ဘဲ အတူတကွ ရင်ဆိုင်ကာ ကာကွယ်နိုင်မည် ဖြစ်သည်။ လူပျိုလူလွတ်များအဖို့ မိမိနှစ်သက်သူကို ရရှိရန်အတွက် ပြိုင်ဘက်များကို မလျှော့သော ဇွဲဖြင့် ကျော်လွှားရမည့် ကာလဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် မိမိ၏ ရာထူးနေရာ သို့မဟုတ် လုပ်ငန်းကို သူတစ်ပါး တိုက်ခိုက်မှုများမှ ကာကွယ်ရမည့် အချိန်ဖြစ်သည်။ စိန်ခေါ်မှုများနှင့် တာဝန်ကြီးမားသော်လည်း မိမိဘက်က အားသာချက်ရှိနေသဖြင့် အောင်မြင်စွာ ရင်ဆိုင်နိုင်မည်။ ငွေကြေးပိုင်းတွင် အခက်အခဲများကို ဇွဲရှိရှိ ဖြေရှင်းနိုင်ပြီး ရလဒ်ကောင်း ရရှိမည်။",
@@ -552,8 +552,8 @@
   },
   "wands_08": {
     "name_upright": "Eight of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_08.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_08.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w08.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w08.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် လျင်မြန်စွာ တိုးတက်ခြင်း၊ သတင်းစကားများ ရောက်ရှိလာခြင်းနှင့် စိတ်လှုပ်ရှားစရာများကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ မမျှော်လင့်ဘဲ အချစ်ရေး ကမ်းလှမ်းမှုများ ရုတ်တရက် ရရှိတတ်ပြီး ဆက်ဆံရေး လျင်မြန်စွာ ဆက်စပ်သွားလိမ့်မည်။ စုံတွဲများအတွက်မူ အိမ်ထောင်ပြုရန် သို့မဟုတ် ခရီးသွားရန် အစီအစဉ်များ အရှိန်အဟုန်ဖြင့် အောင်မြင်စွာ ဖြစ်ထွန်းမည့် အချိန်ဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် အစီအစဉ်များ လျင်မြန်စွာ အကောင်အထည် ပေါ်လာခြင်း၊ သတင်းကောင်းများ ဆက်တိုက်ကြားရခြင်းတို့ကို ဖော်ညွှန်းသည်။ ခရီးသွားလာရသော အလုပ်များ၊ ဆက်သွယ်ရေး သို့မဟုတ် အွန်လိုင်းလုပ်ငန်းများ အထူးအောင်မြင်လိမ့်မည်။ ငွေကြေးပိုင်းတွင် စီးဆင်းမှု မြန်ဆန်နေမည်ဖြစ်ပြီး လျင်မြန်သော အကျိုးအမြတ်များ ဝင်ရောက်လာမည်။",
@@ -571,8 +571,8 @@
   },
   "wands_09": {
     "name_upright": "Nine of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_09.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_09.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w09.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w09.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် သတိကြီးစွာ ထားရှိခြင်း၊ အတိတ်က စိတ်ဒဏ်ရာများကြောင့် စိုးရိမ်ပူပန်နေခြင်းကို ပြသသည်။ စုံတွဲများအကြားတွင် ပြဿနာဟောင်းများကြောင့် တစ်ဦးကိုတစ်ဦး သံသယဝင်နေတတ်ပြီး ကာကွယ်မှုလွန်ကဲနေတတ်သည်။ လူပျိုလူလွတ်များအဖို့ အချစ်သစ်ကို ကြိုဆိုရန် ကြောက်ရွံ့နေပြီး စိတ်တံခါးကို ပိတ်ထားတတ်သော ကာလဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် အခက်အခဲများနှင့် စိန်ခေါ်မှုများစွာကို ကျော်လွှားခဲ့ရပြီး ပန်းတိုင်ရောက်ရန် အနည်းငယ်သာ လိုတော့သော်လည်း အလွန်မောပန်းနေသည့် အခြေအနေ ဖြစ်သည်။ လက်မလျှော့ဘဲ ဆက်လက် ကြံ့ကြံ့ခံရန် လိုအပ်သည်။ ငွေကြေးပိုင်းတွင် အကျပ်အတည်းများကို မနည်းထိန်းချုပ်ထားရတတ်သဖြင့် သတိရှိရှိ ကိုင်တွယ်ပါ။",
@@ -590,8 +590,8 @@
   },
   "wands_10": {
     "name_upright": "Ten of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_10.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_10.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w10.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w10.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် တာဝန်ခံရမှု ကြီးမားခြင်း၊ ဖိအားများနှင့် အလွန်ပင်ပန်းရခြင်းကို ပြသသည်။ စုံတွဲများအကြားတွင် အချစ်ထက် ဘဝတာဝန်များ၊ မိသားစုကိစ္စများကြောင့် စိတ်ပင်ပန်းနေရတတ်ပြီး တစ်ဦးကိုတစ်ဦး ဂရုစိုက်ရန် အချိန်မရှိဘဲ ဖြစ်နေတတ်သည်။ လူပျိုလူလွတ်များအဖို့ ဘဝအခြေအနေ ဖိအားများကြောင့် အချစ်ရေးကို အာရုံမစိုက်နိုင်ဘဲ ဝန်ထုပ်ဝန်ပိုး ဖြစ်နေတတ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် တာဝန်များနှင့် အလုပ်ဒဏ်များ အလွန်အမင်း များပြားနေပြီး တစ်ကိုယ်တော် ရုန်းကန်နေရသဖြင့် အားအင်ကုန်ခမ်းနေသည့် အချိန်ဖြစ်သည်။ အလုပ်များပြားလွန်းသဖြင့် ပိနေတတ်သည်။ ငွေကြေးပိုင်းတွင် ရှာဖွေရမှု အလွန်ပင်ပန်းပြီး ရရှိလာသော ငွေများကိုလည်း တာဝန်များအတွက် ချက်ချင်း သုံးစွဲရတတ်သည်။",
@@ -609,8 +609,8 @@
   },
   "wands_11": {
     "name_upright": "Page of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_11.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_11.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w11.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w11.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် တက်ကြွဆန်းသစ်သော အစပြုခြင်း၊ ရင်ခုန်စရာ သတင်းစကားများနှင့် ပွင့်လင်းမှုကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ မိမိထက် အသက်ငယ်သူ သို့မဟုတ် စိတ်သဘောထား နုပျိုတက်ကြွသူနှင့် ဆုံတွေ့ရတတ်ပြီး ရင်ခုန်စရာ အချစ်ရေး လျင်မြန်စွာ စတင်တတ်သည်။ စုံတွဲများအတွက်မူ ဆက်ဆံရေးတွင် ပျော်ရွှင်စရာ အစီအစဉ်သစ်များ (ဥပမာ- ခရီးတိုသွားခြင်း သို့မဟုတ် ဝါသနာတူအလုပ်များ လုပ်ခြင်း) ကြုံရလိမ့်မည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် စိတ်ကူးစိတ်သန်းအသစ်များ၊ ပရောဂျက်အသေးစားသစ်များ စတင်ရန် အလားအလာကောင်းသော နိမိတ်ဖြစ်သည်။ သတင်းကောင်းများ ရရှိတတ်သည်။ အထူးသဖြင့် ဆက်သွယ်ရေး၊ အနုပညာ သို့မဟုတ် စွမ်းအင်လိုအပ်သော အလုပ်များ ကောင်းမွန်သည်။ ငွေကြေးပိုင်းတွင် လမ်းကြောင်းသစ်များမှ ဝင်ငွေအနည်းငယ် စတင်ဝင်ရောက်လာမည့် အချိန်ဖြစ်သည်။",
@@ -628,8 +628,8 @@
   },
   "wands_12": {
     "name_upright": "Knight of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_12.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_12.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w12.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w12.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် အလွန်အမင်း စိတ်အားထက်သန်ခြင်း၊ စွန့်စားခြင်းနှင့် လျင်မြန်သော အပြောင်းအလဲများကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ ဆွဲဆောင်မှုရှိပြီး တက်ကြွလှုပ်ရှားတတ်သူ၊ ခရီးသွားဝါသနာပါသူနှင့် ရုတ်တရက် ဆုံတွေ့ရတတ်ပြီး အချစ်ရေး လျင်မြန်စွာ အရှိန်ရလိမ့်မည်။ စုံတွဲများအတွက်မူ အတူတကွ ခရီးဝေးသွားရတတ်ပြီး စိတ်လှုပ်ရှားစရာကောင်းသော အချိန်အခါ ဖြစ်သည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် ရဲရဲဝံဝံ စွန့်စားလုပ်ဆောင်ရန်နှင့် လုပ်ငန်းခွင်၌ အပြောင်းအလဲများ ပြုလုပ်ရန် အလွန်သင့်တော်သော အချိန်ဖြစ်သည်။ ခရီးသွားလာရသော အလုပ်များ၊ အရောင်းမြှင့်တင်ရေး သို့မဟုတ် စီမံကိန်းအသစ်များ အောင်မြင်လိမ့်မည်။ ငွေကြေးပိုင်းတွင် စီးဆင်းမှု မြန်ဆန်နေမည်ဖြစ်ပြီး ရဲရဲဝံဝံ ရင်းနှီးမြှုပ်နှံမှုများမှ အကျိုးအမြတ် ရရှိမည့် အချိန်ဖြစ်သည်။",
@@ -647,8 +647,8 @@
   },
   "wands_13": {
     "name_upright": "Queen of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_13.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_13.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w13.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w13.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် စွဲဆောင်မှုရှိခြင်း၊ ယုံကြည်မှုအပြည့်ရှိခြင်းနှင့် သစ္စာရှိမှုကို ပြသသည်။ လူပျိုလူလွတ်များအဖို့ မိမိကိုယ်ကိုယ် ယုံကြည်မှု မြင့်မားနေချိန် ဖြစ်သဖြင့် လူအများ၏ စိတ်ဝင်စားခြင်းကို ခံရတတ်ပြီး ပွင့်လင်းရိုးသားသူနှင့် ဆုံတွေ့ရတတ်သည်။ စုံတွဲများအတွက်မူ ဆက်ဆံရေးသည် အလွန်နွေးထွေးပြီး တစ်ဦးကိုတစ်ဦး ကာကွယ်စောင့်ရှောက်ကာ ပျော်ရွှင်စရာ ဘဝကို တည်ဆောက်နိုင်မည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် မိမိ၏ စီမံခန့်ခွဲမှုစွမ်းရည်နှင့် ခေါင်းဆောင်မှုတို့ကြောင့် လုပ်ငန်းများ အောင်မြင်မှု အထွတ်အထိပ်သို့ ရောက်ရှိမည့် အချိန်ဖြစ်သည်။ အထူးသဖြင့် အမျိုးသမီး ခေါင်းဆောင်များထံမှ အကူအညီကောင်းများ ရရှိတတ်သည်။ ငွေကြေးပိုင်းတွင် စီးဆင်းမှု ကောင်းမွန်နေမည်ဖြစ်ပြီး မိမိ၏ အရည်အချင်းကြောင့် ဝင်ငွေများပြားမည့် ကာလဖြစ်သည်။",
@@ -666,8 +666,8 @@
   },
   "wands_14": {
     "name_upright": "King of Wands",
-    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/wands_14.png",
-    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/wands_14.png",
+    "image_upright": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/upright/tarot_w14.png",
+    "image_reversed": "https://raw.githubusercontent.com/ZawTheHmue/TarotReaderBot/refs/heads/main/reversed/tarot_w14.png",
     "upright": {
       "love": "အချစ်ရေးတွင် ဤကတ်သည် ရင့်ကျက်ခြင်း၊ ကာကွယ်စောင့်ရှောက်နိုင်ခြင်းနှင့် ပြတ်သားသော ချစ်ခြင်းကို ပြသသည်။ စုံတွဲများအတွက်မူ အိမ်ထောင်ဦးစီးကောင်း ပီသစွာဖြင့် ဘဝကို စနစ်တကျ တည်ဆောက်နိုင်မည်ဖြစ်ပြီး အချစ်ရေး အလွန်တည်ငြိမ် ခိုင်မာမည်။ လူပျိုလူလွတ်များအဖို့ အရှိန်အဝါရှိသူ၊ ရင့်ကျက်ပြီး ခေါင်းဆောင်မှုစွမ်းရည်ရှိသူနှင့် ဆုံတွေ့ရတတ်ပြီး အားကိုးရမည့် အချစ်ကို ရရှိလိမ့်မည်။",
       "business": "စီးပွားရေးနှင့် အလုပ်အကိုင်တွင် ကြီးမားသော အောင်မြင်မှု၊ အရှိန်အဝါ ရရှိခြင်းနှင့် စီမံကိန်းကြီးများ အောင်မြင်စွာ အကောင်အထည် ပေါ်လာခြင်းကို ဖော်ညွှန်းသည်။ ခေါင်းဆောင်မှုစွမ်းရည် ထက်မြက်နေပြီး လုပ်ငန်းရှင်ကြီးများ သို့မဟုတ် လူကြီးသူမများထံမှ အပြည့်အဝ ပံ့ပိုးကူညီမှု ရရှိမည်။ ငွေကြေးပိုင်းတွင် ကြွယ်ဝချမ်းသာမည့် နိမိတ်ဖြစ်ပြီး ရင်းနှီးမြှုပ်နှံမှုကြီးများ အထူးအောင်မြင်လိမ့်မည်။",
