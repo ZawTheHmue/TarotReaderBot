@@ -6,7 +6,7 @@ import http.server
 import threading
 import os
 from datetime import datetime
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardRemove, InputMediaPhoto
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ReplyKeyboardMarkup, KeyboardButton, InputMediaPhoto
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ContextTypes
 import config
 
@@ -35,6 +35,21 @@ ALL_USERS = set()
 CARD_BACK_IMAGE = "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=500&auto=format&fit=crop"
 RED_TEXT_START = "<code>"
 RED_TEXT_END = "</code>"
+
+# User Keyboard (အောက်ခြေတွင် အမြဲပေါ်နေမည့် ခလုတ်နှစ်ခု)
+def get_user_reply_keyboard():
+    keyboard = [
+        [KeyboardButton("🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်")],
+        [KeyboardButton("🔮 Contact with Astrologer")]
+    ]
+    return ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+
+# Contact Inline Button Helper
+def get_contact_inline_button():
+    url = f"https://t.me/{config.CREATOR_USERNAME}" if config.CREATOR_USERNAME else "https://t.me/"
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("Contact with Astrologer🔮 (10K💵)", url=url)]
+    ])
 
 # Dummy Web Server
 def run_health_server():
@@ -73,31 +88,67 @@ async def daily_holiday_wishes(application: Application):
             logger.error(f"Error in daily holiday task: {e}")
         await asyncio.sleep(30)
 
-# Bot စတင်ချိန်တွင် Background Task ကို ချိတ်ဆက်ပေးမည့် Post Init
 async def post_init(application: Application) -> None:
     asyncio.create_task(daily_holiday_wishes(application))
     logger.info("Background holiday task successfully attached to Application Lifespan!")
 
-# Contact with Astrologer Button
-def get_contact_button():
-    url = f"https://t.me/{config.CREATOR_USERNAME}" if config.CREATOR_USERNAME else "https://t.me/"
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton("Contact with Astrologer🔮 (10K💵)", url=url)]
-    ])
+# ကတ်ရွေးချယ်ခြင်း Setup ကို ပို့ပေးမည့် ဘုံ Function (Inline နှိပ်နှိပ်၊ Keyboard နှိပ်နှိပ် အလုပ်လုပ်ရန်)
+async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAULT_TYPE):
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    if choice_user_id != config.CREATOR_ID:
+        if USER_USAGE_LOG.get(choice_user_id) == today_str:
+            reject_msg = f"<b>{RED_TEXT_START}😥၀မ်းနည်းပါတယ်ခင်ဗျာ...Tarot ဟောကိုန်းများအား တစ်နေ့လျင် တစ်ကြိမ်သာ အသုံးပြုနိုင်မည် ဖြစ်ပါတယ်...😥{RED_TEXT_END}</b>"
+            await context.bot.send_message(chat_id=chat_id, text=reject_msg, parse_mode="HTML")
+            return
 
-# /start command
+    # 🎯 ဆရာသမားရဲ့ ပုံအတိုင်း (၄) ဆင့် သီးသန့်စီ ဒေါင်လိုက် ထွက်လာခြင်း
+    msg1 = await context.bot.send_message(
+        chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
+    )
+    msg2 = await context.bot.send_photo(
+        chat_id=chat_id, photo=CARD_BACK_IMAGE
+    )
+    msg3 = await context.bot.send_message(
+        chat_id=chat_id, text="⬇️ကတ်ရွေးမည်⬇️"
+    )
+    
+    # 🎯 အနီဝိုင်းပြထားတဲ့ နေရာ - အပိုစာသား လုံးဝမပါဘဲ inline k သီးသန့်ပဲ ထွက်မည်
+    inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🪄", callback_data="flip_card")]]
+    msg4 = await context.bot.send_message(
+        chat_id=chat_id, text="🃏ကတ်တစ်ကတ်ရွေးမည်🪄", reply_markup=InlineKeyboardMarkup(inline_kb)
+    )
+    
+    context.user_data['msgs_to_edit'] = [msg1.message_id, msg2.message_id, msg3.message_id, msg4.message_id]
+
+# /start command - 🎯 အစိမ်းဝိုင်းပြထားတဲ့အတိုင်း မက်ဆေ့ချ်နှစ်ခုပဲ ပေါ်စေခြင်း
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     ALL_USERS.add(user_id)
     
     if user_id == config.CREATOR_ID:
-        await update.message.reply_text("မင်္ဂလာပါ Creator ဆရာသမားဗျာ။ သင်သည် အကန့်အသတ်မရှိ အသုံးပြုနိုင်ပါသည်။", reply_markup=ReplyKeyboardRemove())
+        await update.message.reply_text("မင်္ဂလာပါ Creator ဆရာသမားဗျာ။ သင်သည် အကန့်အသတ်မရှိ အသုံးပြုနိုင်ပါသည်။", reply_markup=get_user_reply_keyboard())
     
     inline_keyboard = [[InlineKeyboardButton("🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်", callback_data="start_tarot")]]
     await update.message.reply_text(
         "🔮 Tarot Reader Bot မှ ကြိုဆိုပါတယ်ဗျာ။ အောက်ပါခလုတ်ကိုနှိပ်၍ ဗေဒင်မေးမြန်းနိုင်ပါသည်။",
         reply_markup=InlineKeyboardMarkup(inline_keyboard)
     )
+
+# Text Messages Handler (User Keyboard ခလုတ်များအတွက်)
+async def handle_text_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
+    user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+    
+    if text == "🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်":
+        await send_tarot_setup(user_id, chat_id, context)
+    elif text == "🔮 Contact with Astrologer":
+        url = f"https://t.me/{config.CREATOR_USERNAME}" if config.CREATOR_USERNAME else "https://t.me/"
+        await update.message.reply_text(
+            "🔮 <b>Astrologer နှင့် တိုက်ရိုက်ဆွေးနွေးရန် အောက်ပါခလုတ်ကို နှိပ်ပါ</b> 🔮",
+            reply_markup=get_contact_inline_button(),
+            parse_mode="HTML"
+        )
 
 # Inline Keyboard Handlers
 async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -108,41 +159,9 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     today_str = datetime.now().strftime("%Y-%m-%d")
     chat_id = query.message.chat_id
     
-    # ၁။ "🔮 Tarot ဗေဒင်ဟောကိန်းရယူမည်" ကို နှိပ်လိုက်ချိန်
     if query.data == "start_tarot":
-        if user_id != config.CREATOR_ID:
-            if USER_USAGE_LOG.get(user_id) == today_str:
-                reject_msg = f"<b>{RED_TEXT_START}😥၀မ်းနည်းပါတယ်ခင်ဗျာ...Tarot ဟောကိုန်းများအား တစ်နေ့လျင် တစ်ကြိမ်သာ အသုံးပြုနိုင်မည် ဖြစ်ပါတယ်...😥{RED_TEXT_END}</b>"
-                await query.message.reply_text(reject_msg, parse_mode="HTML")
-                return
-        
-        # 🎯 [ကွက်တိ] ဆရာသမား မှာထားတဲ့အတိုင်း မက်ဆေ့ချ် (၄) ခု သီးသန့်စီ အစဉ်လိုက်ထွက်ခြင်း
-        # (၁) သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ စာသားသီးသန့်
-        msg1 = await context.bot.send_message(
-            chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
-        )
-        
-        # (၂) အောက်က card back ပုံ သီးသန့်
-        msg2 = await context.bot.send_photo(
-            chat_id=chat_id, photo=CARD_BACK_IMAGE
-        )
-        
-        # (၃) အာ့အောက်က ⬇️ကတ်ရွေးမည်⬇️ text သီးသန့်
-        msg3 = await context.bot.send_message(
-            chat_id=chat_id, text="⬇️ကတ်ရွေးမည်⬇️"
-        )
-        
-        # (၄) အောက်က 🃏ကတ်တစ်ကတ်ရွေးမည်🪄 inline k သီးသန့်
-        inline_kb = [[InlineKeyboardButton("🃏ကတ်တစ်ကတ်ရွေးမည်🪄", callback_data="flip_card")]]
-        reply_markup = InlineKeyboardMarkup(inline_kb)
-        msg4 = await context.bot.send_message(
-            chat_id=chat_id, text="✨ စတင်ရန် ခလုတ်နှိပ်ပါ ✨", reply_markup=reply_markup
-        )
-        
-        # အန်နီမေးရှင်း ပြောင်းလဲရန် ID များကို သိမ်းဆည်းခြင်း
-        context.user_data['msgs_to_edit'] = [msg1.message_id, msg2.message_id, msg3.message_id, msg4.message_id]
+        await send_tarot_setup(user_id, chat_id, context)
 
-    # ၂။ "🃏ကတ်တစ်ကတ်ရွေးမည်🪄" ခလုတ်ကို နှိပ်လိုက်သည့်အချိန်
     elif query.data == "flip_card":
         USER_USAGE_LOG[user_id] = today_str
         
@@ -155,11 +174,9 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         card = TAROT_DATA[card_key]
         is_upright = random.choice([True, False])
         
-        # 🎯 [ကွက်တိ] အတည့်ဆို ကတ်နာမည်သီးသန့်၊ ပြောင်းပြန်မှသာ (ပြောင်းပြန်) ထည့်သွင်းခြင်း
         base_name = card["name_upright"].replace(" (အတည်)", "").replace("(အတည်)", "").strip()
         card_name = base_name if is_upright else f"{base_name} (ပြောင်းပြန်)"
         
-        # 🎯 [STABLE IMAGE LOGIC] JSON ထဲက သက်ဆိုင်ရာပုံ (Upright သို့မဟုတ် Reversed ပုံ URL) ကို တိုက်ရိုက်ဆွဲယူခြင်း
         card_image = card["image_upright"] if is_upright else card["image_reversed"]
         reading_data = card["upright"] if is_upright else card["reversed"]
         
@@ -172,37 +189,37 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        # 🎯 [EDITED ANIMATION FLOW] မက်ဆေ့ချ် (၄) ခုလုံးကို အမှားအယွင်းမရှိ ချက်ချင်း ပုံစံပြောင်းလဲခြင်း
+        # 🎯 [🎯 EXACT EDIT/REPLACE FLOW] ဆရာသမားရဲ့ ညွှန်ကြားချက်အတိုင်း ကွက်တိနေရာချခြင်း
         if 'msgs_to_edit' in context.user_data:
             m1_id, m2_id, m3_id, m4_id = context.user_data['msgs_to_edit']
             
             try:
-                # (၁) Card Name စာသီးသန့် ပြောင်းလဲခြင်း
+                # ၁။ သင့်မေးခွန်း... နေရာမှာ -> Random Card ရဲ့ Name ကို edit ဖြင့် ချိန်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
                 )
                 
-                # (၂) Random Card ပုံသီးသန့် (အတည့် သို့မဟုတ် ပြောင်းပြန်ပုံ URL) သို့ တိုက်ရိုက်လဲလှယ်ခြင်း
+                # ၂။ Photo နေရာမှာ -> Random Card ပုံကို replace ဖြင့် ချိန်း
                 await context.bot.edit_media(
                     chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
                 )
                 
-                # (၃) Loading text သီးသန့် သို့ ပြောင်းလဲခြင်း
+                # ၃။ ကတ်ရွေးမည် နေရာမှာ -> Tarot ဟောကိန်းများ.....ခေတ္တစောင့်ပါ⏳ ကို edit ဖြင့် ချိန်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id,
                     text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>", parse_mode="HTML"
                 )
                 
-                # (၄) အောက်ခြေတွင် Contact Button ကပ်လျက် ထည့်သွင်းပေးခြင်း
+                # ၄။ ကတ်တစ်ကတ်ရွေးမည် inline k ကို -> Contact with Astrologer inline k ဖြင့် edit ချိန်း
                 await context.bot.edit_message_text(
-                    chat_id=chat_id, message_id=m4_id, text="🔮 <b>Astrologer နှင့် တိုက်ရိုက်ဆွေးနွေးရန်</b> 🔮",
-                    reply_markup=get_contact_button(), parse_mode="HTML"
+                    chat_id=chat_id, message_id=m4_id, text="🔮 <b>Contact Information</b> 🔮",
+                    reply_markup=get_contact_inline_button(), parse_mode="HTML"
                 )
                 
                 # ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
                 await asyncio.sleep(5)
                 
-                # (၅) ၅ စက္ကန့်ပြည့်ပါက Loading text နေရာတွင် အဟောအပြည့်အစုံ ကွက်တိထွက်ပေါ်စေခြင်း
+                # ၅။ ၅ စက္ကန့်ပြည့်ရင် Loading text (မက်ဆေ့ချ် နံပါတ် ၃) နေရာမှာတင် အဟောကို edit နဲ့ ထပ်ချိန်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id, text=full_interpretation, parse_mode="HTML"
                 )
@@ -219,9 +236,15 @@ def main():
 
     run_health_server()
 
+    # User Keyboard ကို အမြဲတမ်း တပ်ဆင်ပြသထားရန် Application ဆောက်ခြင်း
     application = Application.builder().token(config.BOT_TOKEN).post_init(post_init).build()
 
     application.add_handler(CommandHandler("start", start))
+    
+    # User ရဲ့ စာသားရိုက်နှိပ်မှု သို့မဟုတ် Reply Keyboard နှိပ်မှုများကို ဖမ်းယူရန် Handler
+    from telegram.ext import MessageHandler, filters
+    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_message))
+    
     application.add_handler(CallbackQueryHandler(handle_callback))
 
     print("Tarot Bot Is Running Successfully...")
