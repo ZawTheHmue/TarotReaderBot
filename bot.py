@@ -101,7 +101,7 @@ async def send_tarot_setup(choice_user_id, chat_id, context: ContextTypes.DEFAUL
             await context.bot.send_message(chat_id=chat_id, text=reject_msg, parse_mode="HTML")
             return
 
-    # မက်ဆေ့ချ် (၃) ခု သီးသန့်ထွက်မည် (အပိုစာသား လုံးဝမပါပါ)
+    # မက်ဆေ့ချ် (၃) ခု သီးသန့်ထွက်မည်
     msg1 = await context.bot.send_message(
         chat_id=chat_id, text="<b>သင့်မေးခွန်းကို အာရုံပြု၍ ကတ်အားရွေးချယ်ပါ</b>", parse_mode="HTML"
     )
@@ -187,34 +187,34 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             f"✨ <b>အနှစ်ချုပ်၊ ရှောင်ရန်ဆောင်ရန်နှင့် ထူးခြားချက်</b>\n{reading_data['summary']}"
         )
         
-        if 'msgs_to_edit' in context.user_data:
-            m1_id, m2_id, m3_id = context.user_data['msgs_to_edit']
+        # 🎯 [PROFESSIONAL STATE CONTROL] State ပဋိပက္ခမဖြစ်အောင် pop စနစ်ဖြင့် ID များကို သိမ်းဆည်းခြင်း
+        msgs_to_edit = context.user_data.pop('msgs_to_edit', None)
+        
+        if msgs_to_edit and len(msgs_to_edit) == 3:
+            m1_id, m2_id, m3_id = msgs_to_edit
             
             try:
-                # ⚡ [အဆင့် ၁ - ချက်ချင်းပြောင်းမည့်အပိုင်း] ခလုတ်နှိပ်လိုက်တာနဲ့ ချက်ချင်း မျက်စိရှေ့တင် ဒိုင်းခနဲ အကုန်ပြောင်းသွားမည်
-                
-                # ၁။ သင့်မေးခွန်း... နေရာတွင် -> Card Name အဖြစ် ချက်ချင်းပြောင်းခြင်း
-                await context.bot.edit_message_text(
-                    chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
+                # 🎯 [PROFESSIONAL GATHER FLOW] Telegram Rate limit မထိစေရန်နှင့် အချိန်ကိုက်ကွက်တိဖြစ်စေရန်
+                # Request ၃ ခုလုံးကို တစ်ပြိုင်တည်း Thread Pool/Pipeline ထဲ စုပြုံမောင်းနှင်လိုက်ခြင်း (ချက်ချင်းပြောင်းလဲမည်)
+                await asyncio.gather(
+                    context.bot.edit_message_text(
+                        chat_id=chat_id, message_id=m1_id, text=f"🃏 <b>{card_name}</b>", parse_mode="HTML"
+                    ),
+                    context.bot.edit_message_media(
+                        chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
+                    ),
+                    context.bot.edit_message_text(
+                        chat_id=chat_id, message_id=m3_id,
+                        text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
+                        reply_markup=get_contact_inline_button(),
+                        parse_mode="HTML"
+                    )
                 )
                 
-                # ၂။ Photo နေရာတွင် -> Random ကတ်ပုံအသစ်သို့ ချက်ချင်း (Replace) လဲလှယ်ခြင်း
-                await context.bot.edit_message_media(
-                    chat_id=chat_id, message_id=m2_id, media=InputMediaPhoto(media=card_image)
-                )
-                
-                # ၃။ ⬇️ကတ်ရွေးမည်⬇️ နှင့် Inline ခလုတ်ဟောင်း နေရာတွင် -> Loading စာသား + Contact Button သို့ ချက်ချင်းပြောင်းလဲခြင်း
-                await context.bot.edit_message_text(
-                    chat_id=chat_id, message_id=m3_id,
-                    text="⏳ <b>Tarot ဟောကိန်းများအား ရယူနေသည် ခေတ္တာစောင့်ပါ⏳... Loading</b>",
-                    reply_markup=get_contact_inline_button(),
-                    parse_mode="HTML"
-                )
-                
-                # ⏱️ [အဆင့် ၂ - စောင့်ဆိုင်းခြင်းအပိုင်း] ပြောင်းလဲမှုတွေ ချက်ချင်းလုပ်ပြီးမှ ၅ စက္ကန့် တိတိ စောင့်ခိုင်းခြင်း
+                # ⏱️ ၅ စက္ကန့် စောင့်ဆိုင်းခြင်း
                 await asyncio.sleep(5)
                 
-                # ⚡ [အဆင့် ၃ - ဟောချက်ထုတ်မည့်အပိုင်း] ၅ စက္ကန့်ပြည့်မှ Loading စာသားနေရာတွင် အဟောကို ကွက်တိ Edit ထပ်လုပ်ခြင်း
+                # 🎯 ၅ စက္ကန့်ပြည့်ပါက Loading နေရာတွင် အဟောအပြည့်အစုံကို Edit ဖြင့် တည်ငြိမ်စွာ အစားထိုးခြင်း
                 await context.bot.edit_message_text(
                     chat_id=chat_id, message_id=m3_id,
                     text=full_interpretation,
@@ -223,9 +223,7 @@ async def handle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 )
                 
             except Exception as err:
-                logger.error(f"Animation Edit Failure: {err}")
-                
-            del context.user_data['msgs_to_edit']
+                logger.error(f"Animation Professional Edit Failure: {err}")
 
 def main():
     if not config.BOT_TOKEN:
